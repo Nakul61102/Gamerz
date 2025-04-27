@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tailwind base styles */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+
+/* index.css */
+/* index.css */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+  background-color: #0f172a;
+  color: white;
+}
+
+/* App wrapper */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding-top: 60px;   /* Navbar height */
+  padding-bottom: 50px; /* Footer height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Navbar */
+.navbar {
+  height: 60px;
+  width: 100%;
+  background-color: #0f172a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+/* Footer */
+.footer {
+  height: 50px;
+  width: 100%;
+  background-color: #0f172a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
