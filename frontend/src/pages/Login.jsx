@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import { loginUser } from "../api"; // Adjust the import path as necessary
 
 const Login = () => {
   const { setUser } = useContext(AuthContext);
@@ -11,38 +12,29 @@ const Login = () => {
   const [successMsg, setSuccessMsg] = useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setErrorMsg("");
-    setSuccessMsg("");
-    try {
-      const response = await fetch("http://localhost:3001/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  e.preventDefault();
+  setErrorMsg("");
+  setSuccessMsg("");
 
-      const data = await response.json();
+  try {
+    const data = await loginUser({ email, password });
 
-      if (response.ok) {
-        setSuccessMsg("Login successful!");
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user || {})); // ✅ Store user safely
+    setSuccessMsg("Login successful!");
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user || {}));
 
-        setUser(data.user || null);
-        console.log("Login successful:", data.user);
-        navigate("/feed");
-      } else {
-        console.error("Login failed:", data.message);
-        setErrorMsg("Login failed: Gamer not found.");
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      setErrorMsg(
-        "Login failed: " +
-          (error.response?.data?.message || "An error occurred.")
-      );
-    }
-  };
+    setUser(data.user || null);
+    console.log("Login successful:", data.user);
+    navigate("/feed");
+  } catch (error) {
+    console.error("Login error:", error);
+    setErrorMsg(
+      "Login failed: " +
+        (error.response?.data?.message || "An error occurred.")
+    );
+  }
+};
+
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0B1120] text-white">

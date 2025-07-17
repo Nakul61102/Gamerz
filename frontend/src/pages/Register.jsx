@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";  // ✅ Import useNavigate
+import { registerUser } from "../api";
+
 
 
 const Register = () => {
@@ -12,34 +14,33 @@ const Register = () => {
   const navigate = useNavigate();  // ✅ Hook for navigation
 
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setMessage("");
-    setError("");
+ const handleRegister = async (e) => {
+  e.preventDefault();
+  setMessage("");
+  setError("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match!");
-      return;
-    }
+  if (password !== confirmPassword) {
+    setError("Passwords do not match!");
+    return;
+  }
 
-    try {
-      const response = await fetch("http://localhost:3001/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: username.trim(), email: email.trim(), password }),
-      });
+  try {
+    await registerUser({
+      username: username.trim(),
+      email: email.trim(),
+      password,
+    });
 
-      const data = await response.json();
-      if (response.ok) {
-        setMessage(data.message || "Registration successful! 🎉");
-        navigate("/login");
-      } else {
-        setError(data.message || "Registration failed. Try again.");
-      }
-    } catch (error) {
-      setError("Something went wrong. Please try again.");
-    }
-  };
+    setMessage("Registration successful! 🎉");
+    navigate("/login");
+  } catch (error) {
+    console.error("Registration error:", error);
+    setError(
+      error.response?.data?.message || "Something went wrong. Please try again."
+    );
+  }
+};
+
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0B1120] text-white">
