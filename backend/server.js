@@ -48,12 +48,12 @@ app.use("/api/event", eventRoutes); // Event endpoints
 app.use("/api/match", matchPostRoutes); // Match post endpoints
 
 // Serve frontend files in production
-const __dirname1 = path.resolve();
-app.use(express.static(path.join(__dirname1, "/frontend/build")));
+// const __dirname1 = path.resolve();
+// app.use(express.static(path.join(__dirname1, "/frontend/build")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"));
+// });
 
 
 io.on("connection", (socket) => {
