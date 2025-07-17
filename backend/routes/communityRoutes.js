@@ -2,9 +2,10 @@ import express from 'express';
 import {
   createCommunity,
   toggleCommunityMembership,
-  getCommunityDetails,
+  getCommunityById,
   getAllCommunities,
-  getUserCommunities
+  getUserCommunities,
+  deleteCommunity
 } from '../controllers/communityController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 const router = express.Router();
@@ -17,7 +18,10 @@ router.get("/userCommunity", authMiddleware, getUserCommunities); // Fetch all p
 router.post('/join/:communityId', authMiddleware, toggleCommunityMembership);
 
 // Get details of a specific community
-router.get('/:communityId', authMiddleware, getCommunityDetails);
+router.get('/:id', authMiddleware, getCommunityById);
+
+// Delete a community
+router.delete('/:id', authMiddleware, deleteCommunity);
 
 // Get all communities
 router.get('/', authMiddleware, getAllCommunities);

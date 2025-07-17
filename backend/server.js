@@ -5,6 +5,8 @@ import connectDB from "./config.js";
 import authRoutes from "./routes/authRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
+import matchPostRoutes from "./routes/matchPostRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import path from "path";
 import http from "http"; // Required for Socket.IO
@@ -42,6 +44,8 @@ app.use("/api/profile", profileRoutes); // Profile-related endpoints
 app.use("/api/auth", authRoutes); // Authentication endpoints
 app.use("/api/communities", communityRoutes); // Community endpoints
 app.use("/api/post", postRoutes); // Post endpoints
+app.use("/api/event", eventRoutes); // Event endpoints
+app.use("/api/match", matchPostRoutes); // Match post endpoints
 
 // Serve frontend files in production
 const __dirname1 = path.resolve();

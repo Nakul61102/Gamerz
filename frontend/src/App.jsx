@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Feed from "./pages/Feed";
 import Community from "./pages/Community";
+import CommunityDetails from "./components/Community/CommunityDetails";
 import Profile from "./pages/Profile";
 import { AuthProvider } from "./context/AuthContext";
 import Footer from "./components/Footer";
@@ -29,8 +30,9 @@ function App() {
             <Route element={<PrivateRoute />}>
               <Route path="/feed" element={<Feed />} />
               <Route path="/community" element={<Community />} />
+              <Route path="/community/:id" element={<CommunityDetails />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/:id" element={<Profile />} />
+              {/* <Route path="/profile/:id" element={<Profile />} /> */}
             </Route>
           </Routes>
         </div>

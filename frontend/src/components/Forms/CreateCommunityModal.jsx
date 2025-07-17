@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createCommunity } from "../api"; // Make sure this function exists
+import { createCommunity } from "../../api"; // Make sure this function exists
 import { toast } from "react-toastify";
 
 const CreateCommunityModal = ({ isOpen, onClose, onCreated }) => {

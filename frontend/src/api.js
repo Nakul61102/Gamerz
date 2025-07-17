@@ -1,216 +1,123 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3001/api"; // Update if needed
+const API_URL = process.env.API_URL;
 
-// Authentication APIs
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Add token automatically to every request if available
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// AUTH
 export const registerUser = async (userData) => {
-  const response = await fetch(`${API_URL}/auth/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  });
-  return response.json();
-};
-
-export const loginUser = async (credentials) => {
-  const response = await axios.post(`${API_URL}/auth/login`, credentials);
+  const response = await axiosInstance.post("/auth/register", userData);
   return response.data;
 };
 
+export const loginUser = async (credentials) => {
+  const response = await axiosInstance.post("/auth/login", credentials);
+  return response.data;
+};
+
+// PROFILE
 export const fetchProfile = async (userId) => {
-  const token = localStorage.getItem("token"); // Get token from local storage
-
-  try {
-    const response = await fetch(`${API_URL}/profile/${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Attach the token
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch profile");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    throw error;
-  }
+  const response = await axiosInstance.get(`/profile/${userId}`);
+  return response.data;
 };
 
+export const updateProfile = async (userId, profileData) => {
+  const response = await axiosInstance.put(`/profile/${userId}`, profileData);
+  return response.data.profile;
+};
+
+// POSTS
 export const fetchUserPosts = async (userId) => {
-  const token = localStorage.getItem("token"); // Get token from local storage
-
-  try {
-    const response = await fetch(`${API_URL}/post/userPost`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Attach the token
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch profile");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    throw error;
-  }
-};
-
-// Fetch all communities
-export const fetchCommunities = async () => {
-  const token = localStorage.getItem("token"); // Get token from localStorage
-  try {
-    const response = await axios.get(`${API_URL}/communities`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching communities:", error);
-    throw error;
-  }
-};
-
-// Join a community
-export const joinCommunity = async (communityId) => {
-  try {
-    const token = localStorage.getItem("token"); // Get auth token
-    const response = await fetch(`${API_URL}/communities/join/${communityId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Include token for authentication
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to join community");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error joining community:", error);
-    throw error;
-  }
+  const response = await axiosInstance.get("/post/userPost");
+  return response.data;
 };
 
 export const fetchAllPosts = async () => {
-  const response = await axios.get(`${API_URL}/post`, {
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  });
+  const response = await axiosInstance.get("/post");
   return response.data;
 };
 
 export const createPost = async (postData) => {
-  const response = await axios.post(`${API_URL}/post/create`, postData, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await axiosInstance.post("/post/create", postData);
   return response.data;
 };
 
 export const deletePost = async (postId) => {
-  const response = await axios.delete(`${API_URL}/post/${postId}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await axiosInstance.delete(`/post/${postId}`);
   return response.data;
 };
 
 export const likePost = async (postId) => {
-  const token = localStorage.getItem("token");
+  const response = await axiosInstance.post(`/post/like/${postId}`);
+  return response.data;
+};
 
-  const response = await axios.post(
-    `${API_URL}/post/like/${postId}`,
-    {}, // no body needed for toggle
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+// COMMUNITIES
+export const fetchCommunities = async () => {
+  const response = await axiosInstance.get("/communities");
+  return response.data;
+};
 
+export const fetchCommunityById = async (communityId) => {
+  const response = await axiosInstance.get(`/communities/${communityId}`);
+  return response.data;
+};
+
+export const createCommunity = async (data) => {
+  const response = await axiosInstance.post("/communities/create", data);
+  return response.data;
+};
+
+export const fetchUserCommunities = async () => {
+  const response = await axiosInstance.get("/communities/userCommunity");
   return response.data;
 };
 
 export const toggleCommunityMembership = async (communityId) => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${API_URL}/communities/join/${communityId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to toggle community membership");
-  }
-
-  return await response.json();
+  const response = await axiosInstance.post(`/communities/join/${communityId}`);
+  return response.data;
 };
 
-export const updateProfile = async (userId, profileData) => {
-  const response = await axios.put(
-    `${API_URL}/profile/${userId}`,
-    profileData,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  return response.data.profile;
+export const deleteCommunity = async (communityId) => {
+  const response = await axiosInstance.delete(`/communities/${communityId}`);
+  return response.data;
 };
 
-export const createCommunity = async (data) => {
-  const res = await fetch(`${API_URL}/communities/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    body: JSON.stringify(data),
-  });
+// Events
+export const createEvent = async (data) =>
+  await axiosInstance.post("/event", data);
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Failed to create community");
-  }
-
-  return res.json();
+export const getCommunityEvents = async (communityId) => {
+  const response = await axiosInstance.get(`/event/${communityId}`);
+  return response.data;
 };
 
-export const fetchUserCommunities = async () => {
-  try {
-    const res = await fetch(`${API_URL}/communities/userCommunity`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+export const joinEvent = async (eventId) => {
+  const response = await axiosInstance.post(`/event/join/${eventId}`);
+  return response.data;
+};
 
-    if (!res.ok) throw new Error("Failed to fetch user communities");
+// Matchmaking
+export const createMatchPost = async (data) => {
+  const response = await axiosInstance.post("/match", data);
+  return response.data;
+};
 
-    return await res.json();
-  } catch (error) {
-    console.error("Error from fetchUserCommunities in api.js:", error);
-    throw error; // Optional: Re-throw to handle it in the component with toast
-  }
+export const getCommunityMatchPosts = async (communityId) => {
+  const response = await axiosInstance.get(`/match/${communityId}`);
+  return response.data;
 };

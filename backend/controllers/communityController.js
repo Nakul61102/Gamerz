@@ -71,33 +71,33 @@ export const toggleCommunityMembership = async (req, res) => {
 };
 
 //get community by id
-export const getCommunityDetails = async (req, res) => {
-  const { communityId } = req.params;
+export const getCommunityById = async (req, res) => {
+  const { id } = req.params;
 
   try {
-    const community = await Community.findById(communityId)
-      .populate("admin", "_id username avatar")
-      .populate("members", "_id username avatar")
-      .populate("posts");
+    const community = await Community.findById(id)
+      .populate("admin", "username _id")
+      .populate("members", "username _id");
 
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const userId = req.gamer?.id;
+    // Add derived counts manually
+    const memberCount = community.members.length;
+    const postCount = community.posts?.length || 0; // If you store posts in a subfield
 
     res.status(200).json({
-      ...community.toObject(),
-      isMember: community.members.some(
-        (member) => member._id.toString() === userId
-      ),
+      ...community.toObject(), // Convert Mongoose doc to plain object
+      memberCount,
+      postCount,
     });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed to fetch community details", error });
+  } catch (err) {
+    console.error("Error fetching community:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 //get all
 export const getAllCommunities = async (req, res) => {
@@ -145,5 +145,36 @@ export const getUserCommunities = async (req, res) => {
   } catch (error) {
     console.error("Error fetching communities:", error);
     res.status(500).json({ error: "Failed to fetch communities" });
+  }
+};
+
+//delete community
+export const deleteCommunity = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const community = await Community.findById(id);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found." });
+    }
+
+    const gamerId = req.gamer.id; // From auth middleware
+
+    if (!gamerId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Ensure the user is the admin of the community
+    if (community.admin.toString() !== gamerId.toString()) {
+      return res.status(403).json({ message: "Forbidden: Not the admin" });
+    }
+
+    // 🔥 Use deleteOne instead of deprecated remove
+    await community.deleteOne();
+
+    res.status(200).json({ message: "Community deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting community:", error);
+    res.status(500).json({ message: "Error deleting community.", error });
   }
 };

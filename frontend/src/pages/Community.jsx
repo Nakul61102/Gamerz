@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchCommunities, toggleCommunityMembership } from "../api";
-import CommunityCard from "../components/CommunityCard";
+import CommunityCard from "../components/Cards/CommunityCard";
 
 const Community = () => {
   const [activeTab, setActiveTab] = useState("joined");

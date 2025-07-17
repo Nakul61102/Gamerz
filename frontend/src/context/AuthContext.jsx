@@ -4,18 +4,21 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // 👈 Add loading
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser)); // ✅ Parse and set user
+        setUser(JSON.parse(storedUser));
       } catch (error) {
         console.error("Error parsing user data:", error);
         localStorage.removeItem("user");
       }
     }
+    setLoading(false); // ✅ Done checking
   }, []);
+
 
   const login = (userData, token) => {
     localStorage.setItem("user", JSON.stringify(userData)); // Store user data
@@ -30,7 +33,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

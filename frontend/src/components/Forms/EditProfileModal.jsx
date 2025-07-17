@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { updateProfile } from "../api";
+import { updateProfile } from "../../api";
 import { toast } from "react-toastify";
 
 const EditProfileModal = ({ isOpen, onClose, profileData, onUpdateSuccess }) => {

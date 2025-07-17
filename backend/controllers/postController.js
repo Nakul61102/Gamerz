@@ -3,18 +3,11 @@ import Community from "../models/communitySchema.js";
 
 
 export const createPost = async (req, res) => {
-  const { content, image, communityId } = req.body;
+  const { content, image } = req.body;
   const io = req.app.get("io"); // ✅ grab io instance
 
   try {
     let post;
-
-    if (communityId) {
-      const community = await Community.findById(communityId);
-      if (!community) {
-        return res.status(404).json({ message: "Community not found." });
-      }
-
       post = new Post({
         user: req.gamer.id,
         content,
@@ -22,17 +15,7 @@ export const createPost = async (req, res) => {
       });
 
       await post.save();
-      community.posts.push(post._id);
-      await community.save();
-    } else {
-      post = new Post({
-        user: req.gamer.id,
-        content,
-        image,
-      });
-
-      await post.save();
-    }
+    
 
     // ✅ Real-time broadcast
     const fullPost = await Post.findById(post._id).populate("user", "username avatar");

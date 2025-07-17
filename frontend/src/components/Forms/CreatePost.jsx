@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createPost } from "../api";
+import { createPost } from "../../api";
 
 const CreatePostModal = ({ isOpen, onClose, onPostCreated }) => {
   const [content, setContent] = useState("");

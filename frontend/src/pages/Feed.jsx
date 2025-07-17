@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
-import Post from "../components/PostCard";
+import Post from "../components/Cards/PostCard";
 import { fetchAllPosts } from "../api";
 import socket from "../socket";
 
